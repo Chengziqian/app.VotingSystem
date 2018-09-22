@@ -1,0 +1,7 @@
+module.exports = {
+  port: 4000, // local port for webpack-server
+  api: { // api proxy
+    host: '', // api host
+    prefix: 'api'
+  }
+}
