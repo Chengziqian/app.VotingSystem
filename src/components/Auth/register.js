@@ -33,11 +33,7 @@ class Register extends React.Component {
         }).catch(e => {
           this.setState({ loading: false });
           if (e.response.status === 422) {
-            for (let key in e.response.data) {
-              message.error(e.response.data[key])
-            }
-          } else {
-            message.error(e.response.data.message)
+            this.props.form.setFields(e.response.data);
           }
         })
       } else {

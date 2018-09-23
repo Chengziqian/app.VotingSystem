@@ -13,7 +13,7 @@ class Auth extends React.Component {
   render() {
     return(
       <Row type="flex" justify="center" className="myCard">
-        <Col xs={24} sm={12}>
+        <Col xs={24} sm={15} md={12} lg={10} xl={8}>
           <div className="title">
             <p className="main-title">投票系统</p>
             <p className="sub-title">BETA</p>
