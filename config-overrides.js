@@ -28,4 +28,4 @@ module.exports = {
       return configFunction(process.env.PROXY_TARGET || proxy, host);
     }
   }
-}
+};
