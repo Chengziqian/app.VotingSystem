@@ -25,8 +25,8 @@ class Register extends React.Component {
           password: sha256(values.password)
         }).then(r => {
           message.success('注册成功', 1).then(() => {
-            store.set('token', r.data.api_token);
-            store.set('user', r.data.user);
+            store.set('VS_TOKEN', r.data.api_token);
+            store.set('VS_USER', r.data.user);
             this.setState({ loading: false });
             window.location.reload()
           })
