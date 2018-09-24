@@ -2,12 +2,9 @@ import React, { Component } from 'react';
 import { Menu, Icon } from 'antd';
 import lazyload from '../lazyload.js';
 import store from 'store'
-import { BrowserRouter, Route, Redirect, Link } from 'react-router-dom';
+import { BrowserRouter, Route, Redirect, Link , Switch} from 'react-router-dom';
 
 class App extends Component{
-  constructor(props) {
-    super(props)
-  }
 
   logout = () => {
     store.remove('VS_TOKEN');
@@ -35,9 +32,15 @@ class App extends Component{
             <Menu.Item style={{float: 'right'}}><span><Icon type="user" />{store.get('VS_USER').username}</span></Menu.Item>
           </Menu>
           <div style={{marginTop: '30px', padding: '0px 20px'}}>
-            <Route exact path="/" component={() => <Redirect to="/dashboard"/>}/>
-            <Route exact path="/dashboard" component={lazyload(() => import('../Dashboard/dashboard'))}/>
-            <Route exact path="/vote/create" component={lazyload(() => import('../Vote/create'))}/>
+            <Switch>
+              <Route exact path="/" component={() => <Redirect to="/dashboard"/>}/>
+              <Route exact path="/dashboard" component={lazyload(() => import('../Dashboard/dashboard'))}/>
+              <Route exact path="/vote/create" component={lazyload(() => import('../Vote/create'))}/>
+              <Route exact path="/vote/list" component={lazyload(() => import('../Vote/list'))}/>
+              <Route exact path="/vote/hasVoted" component={lazyload(() => import('../Vote/hasVoted'))}/>
+              <Route exact path="/vote/:id" component={lazyload(() => import('../Vote/detail'))}/>
+              <Route exact path="/vote/:id/result" component={lazyload(() => import('../Vote/result'))}/>
+            </Switch>
           </div>
         </div>
       </BrowserRouter>

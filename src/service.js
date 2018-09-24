@@ -31,7 +31,7 @@ axios.interceptors.response.use(r => r, e => {
       message.error('服务器未响应');
       break;
     default:
-      message.error(e.response.data.message || e.response.data);
+      message.error(e.response.data.message || '未知错误');
       break;
   }
   return Promise.reject(e)

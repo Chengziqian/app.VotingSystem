@@ -15,27 +15,27 @@ class Dashboard extends React.Component {
         title: <span style={{color: '#ef5350'}}>我的投票活动</span>,
         icon: <Icon type="profile" theme="twoTone" twoToneColor="#f44336" style={{fontSize: '50px'}} />,
         introduction: '查看自己创建的投票活动。',
-        to: ''
+        to: '/vote/list'
       },
       {
         title: <span style={{color: '#69f0ae'}}>查看已投票</span>,
         icon: <Icon type="check-circle" theme="twoTone" twoToneColor="#00e676" style={{fontSize: '50px'}} />,
         introduction: '查看自己投票过的投票活动。',
-        to: ''
+        to: '/vote/hasVoted'
       },
       {
         title: <span style={{color: '#ffab40'}}>我的预设群组</span>,
         icon: <Icon type="appstore" theme="twoTone" twoToneColor="#ff9100"  style={{fontSize: '50px'}} />,
         introduction: '创建或查看自己的预设群组。',
-        to: ''
+        to: '/'
       }
     ]
   }
   render() {
     return(
       <Row gutter={16}>
-        {this.CardItems.map(o =>
-          <Col xs={24} sm={12} md={8} lg={6}>
+        {this.CardItems.map((o, index) =>
+          <Col xs={24} sm={12} md={8} lg={6} key={index}>
             <Card hoverable={true} style={{marginBottom: '20px'}}
                   onClick={() => {this.props.history.push(o.to)}}>
               <div align="center">{o.icon}</div>

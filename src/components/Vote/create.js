@@ -1,16 +1,36 @@
 import React from 'react'
 import http from '../../service'
 import {Card, Col, message, Row, Icon, InputNumber} from 'antd'
-import { Form, Input, Button, DatePicker} from 'antd';
+import { Form, Input, Button} from 'antd';
 import {withRouter} from 'react-router-dom';
+import moment from 'moment';
 const FormItem = Form.Item;
 class VoteCreator extends React.Component{
   constructor(props) {
     super(props);
+    this.date = moment().format('YYYY-MM-DD');
     this.state = {
-      loading: false
+      loading: false,
+      time: moment().format('HH:mm')
     };
     this.uuid = 0
+  }
+
+  componentDidMount() {
+    this.timerID = setInterval(
+      () => this.tick(),
+      6000
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick() {
+    let data = this.state;
+    data.time = moment().format('HH:mm');
+    this.setState(data);
   }
 
   handleSubmit = (e) => {
@@ -21,19 +41,19 @@ class VoteCreator extends React.Component{
         http.post('vote', {
           name: values.name,
           introduction: values.introduction,
-          start_time: values.start_time.format('YYYY-MM-DD HH:mm:ss'),
-          end_time: values.end_time.format('YYYY-MM-DD HH:mm:ss'),
+          start_time: values.start_time + ' ' + moment().format('HH:mm:ss'),
+          end_time: values.end_time + ' ' + moment().format('HH:mm:ss'),
           count: values.count,
           options: values.options.filter(v => v)
         }).then(r => {
           message.success('发布成功', 1).then(() => {
             this.setState({ loading: false });
-            this.props.history.push('/dashboard')
+            this.props.history.push('/dashboard');
           })
         }).catch(e => {
           this.setState({ loading: false });
           if (e.response.status === 422) {
-            this.props.form.setFields(e.response.data);
+            this.props.form.setFields(e.response.data.message);
           }
         });
       } else {
@@ -86,8 +106,7 @@ class VoteCreator extends React.Component{
       let arr = [
         (
           <FormItem {...formItemLayout} label="投票选项" key={0}>
-            {getFieldDecorator(`options[${0}]`, {rules: [{required: true, message: '选项至少一个'}]})
-            (<Input />)}
+            {getFieldDecorator(`options[${0}]`, {rules: [{required: true, message: '选项至少一个'}]})(<Input/>)}
           </FormItem>
         )
       ];
@@ -100,10 +119,7 @@ class VoteCreator extends React.Component{
             onClick={() => this.remove(key)}
           /></span>
         ) : null} key={key + 1}>
-          {getFieldDecorator(`options[${key + 1}]`)
-          (
-            <Input />
-          )}
+          {getFieldDecorator(`options[${key + 1}]`)(<Input />)}
         </FormItem>
       ));
       return arr.concat(extra)
@@ -115,29 +131,21 @@ class VoteCreator extends React.Component{
             <Card title="创建投票">
               <Form onSubmit={this.handleSubmit}>
                 <FormItem {...formItemLayout} label="投票名称">
-                  {getFieldDecorator('name', {rules: [{required: true, message: '名字不能为空'}]})
-                  (<Input/>)
-                  }
+                  {getFieldDecorator('name', {rules: [{required: true, message: '名字不能为空'}]})(<Input/>)}
                 </FormItem>
                 <FormItem {...formItemLayout} label="投票简介">
-                  {getFieldDecorator('introduction')
-                  (<Input.TextArea/>)
-                  }
+                  {getFieldDecorator('introduction')(<Input.TextArea/>)}
                 </FormItem>
                 <FormItem {...formItemLayout} label="开始时间">
-                  {getFieldDecorator('start_time', {rules: [{required: true, message: '开始时间不能为空'}]})
-                  (<DatePicker />)
-                  }
+                  {getFieldDecorator('start_time', {initialValue: this.date, rules: [{required: true, message: '开始时间不能为空'}]})(<input type="date" style={{border: '1px solid #d9d9d9', borderRadius: '4px'}}/>)}
+                  <span style={{paddingLeft: '10px'}}>{this.state.time}</span>
                 </FormItem>
                 <FormItem {...formItemLayout} label="结束时间">
-                  {getFieldDecorator('end_time', {rules: [{required: true, message: '开始时间不能为空'}]})
-                  (<DatePicker />)
-                  }
+                  {getFieldDecorator('end_time', {initialValue: this.date, rules: [{required: true, message: '结束时间不能为空'}]})(<input type="date" style={{border: '1px solid #d9d9d9', borderRadius: '4px'}}/>)}
+                  <span style={{paddingLeft: '10px'}}>{this.state.time}</span>
                 </FormItem>
                 <FormItem {...formItemLayout} label="每人票数">
-                  {getFieldDecorator('count', {rules: [{required: true, message: '每人票数不能为空'}]})
-                  (<InputNumber min={1}/>)
-                  }
+                  {getFieldDecorator('count', {rules: [{required: true, message: '每人票数不能为空'}]})(<InputNumber min={1}/>)}
                 </FormItem>
                 {optionItems()}
                 <FormItem {...formItemLayoutWithOutLabel}>
