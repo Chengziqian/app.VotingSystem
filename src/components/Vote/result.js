@@ -54,7 +54,9 @@ class VoteResult extends React.Component{
         result: r.data.sort((x, y) => (x.count < y.count ? 1 : -1)),
         total: total
       });
-    }).catch(e => {})
+    }).catch(e => {
+      this.props.history.push('/vote/'+ this.props.match.params.id);
+    })
   };
 
   render() {
