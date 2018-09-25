@@ -26,6 +26,7 @@ class List extends React.Component {
     return (
       <div>
         <Spin spinning={this.state.loading} indicator={<Icon type="loading" style={{ fontSize: 24 }} spin />}>
+          {this.state.data.length === 0 && <p>您还没有创建任何投票活动</p>}
           <Row gutter={16}>
             {this.state.data.map((o, index) =>
               <Col xs={24} sm={12} md={8} lg={6} key={index}>

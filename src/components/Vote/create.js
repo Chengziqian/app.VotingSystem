@@ -19,7 +19,7 @@ class VoteCreator extends React.Component{
   componentDidMount() {
     this.timerID = setInterval(
       () => this.tick(),
-      6000
+      1000
     );
   }
 
@@ -41,14 +41,14 @@ class VoteCreator extends React.Component{
         http.post('vote', {
           name: values.name,
           introduction: values.introduction,
-          start_time: values.start_time + ' ' + moment().format('HH:mm:ss'),
-          end_time: values.end_time + ' ' + moment().format('HH:mm:ss'),
+          start_time: values.start_date + ' ' + values.start_time + ':00',
+          end_time: values.end_date + ' ' + values.end_time + ':00',
           count: values.count,
           options: values.options.filter(v => v)
         }).then(r => {
           message.success('发布成功', 1).then(() => {
             this.setState({ loading: false });
-            this.props.history.push('/dashboard');
+            this.props.history.push('/vote/' + r.data.id);
           })
         }).catch(e => {
           this.setState({ loading: false });
@@ -124,10 +124,22 @@ class VoteCreator extends React.Component{
       ));
       return arr.concat(extra)
     };
+    let dateLayout = {
+      xs: 14,
+      sm: 14,
+      ms: 14,
+      lg: 12
+    };
+    let timeLayout = {
+      xs: 10,
+      sm: 10,
+      md: 10,
+      lg: 12
+    };
     return (
       <div>
         <Row type="flex" justify="center" style={{padding: '20px 10px'}}>
-          <Col xs={24} sm={15} md={12}>
+          <Col xs={24} sm={18} md={18} lg={12}>
             <Card title="创建投票">
               <Form onSubmit={this.handleSubmit}>
                 <FormItem {...formItemLayout} label="投票名称">
@@ -137,12 +149,24 @@ class VoteCreator extends React.Component{
                   {getFieldDecorator('introduction')(<Input.TextArea/>)}
                 </FormItem>
                 <FormItem {...formItemLayout} label="开始时间">
-                  {getFieldDecorator('start_time', {initialValue: this.date, rules: [{required: true, message: '开始时间不能为空'}]})(<input type="date" style={{border: '1px solid #d9d9d9', borderRadius: '4px'}}/>)}
-                  <span style={{paddingLeft: '10px'}}>{this.state.time}</span>
+                  <Row>
+                    <Col {...dateLayout}>
+                      {getFieldDecorator('start_date', {initialValue: this.date, rules: [{required: true, message: '开始时间不能为空'}]})(<input type="date" style={{border: '1px solid #d9d9d9', borderRadius: '4px', width: '100%'}}/>)}
+                    </Col>
+                    <Col {...timeLayout}>
+                      {getFieldDecorator('start_time', {initialValue: this.state.time, rules: [{required: true, message: '开始时间不能为空'}]})(<input type="time" style={{border: '1px solid #d9d9d9', borderRadius: '4px', width: '100%'}}/>)}
+                    </Col>
+                  </Row>
                 </FormItem>
                 <FormItem {...formItemLayout} label="结束时间">
-                  {getFieldDecorator('end_time', {initialValue: this.date, rules: [{required: true, message: '结束时间不能为空'}]})(<input type="date" style={{border: '1px solid #d9d9d9', borderRadius: '4px'}}/>)}
-                  <span style={{paddingLeft: '10px'}}>{this.state.time}</span>
+                  <Row>
+                    <Col {...dateLayout}>
+                      {getFieldDecorator('end_date', {initialValue: this.date, rules: [{required: true, message: '结束时间不能为空'}]})(<input type="date" style={{border: '1px solid #d9d9d9', borderRadius: '4px', width: '100%'}}/>)}
+                    </Col>
+                    <Col {...timeLayout}>
+                      {getFieldDecorator('end_time', {initialValue: this.state.time, rules: [{required: true, message: '结束时间不能为空'}]})(<input type="time" style={{border: '1px solid #d9d9d9', borderRadius: '4px', width: '100%'}}/>)}
+                    </Col>
+                  </Row>
                 </FormItem>
                 <FormItem {...formItemLayout} label="每人票数">
                   {getFieldDecorator('count', {rules: [{required: true, message: '每人票数不能为空'}]})(<InputNumber min={1}/>)}
