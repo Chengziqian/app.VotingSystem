@@ -79,6 +79,7 @@ class VoteResult extends React.Component{
               <p style={{textAlign: 'center', fontSize: '24pt'}}>{this.state.data.name}</p>
               <p style={{wordWrap: 'break-word',wordBreak: 'normal'}}>{this.state.data.introduction}</p>
               <hr/>
+              <p>共计: {this.state.total} 票</p>
               {
                 (() => (
                   this.state.result.map((o, index) => (
