@@ -1,5 +1,5 @@
 import React from 'react'
-import {Col, Card, Row, Icon, Spin} from 'antd'
+import {Col, Card, Row, Icon, Spin, Tag} from 'antd'
 import http from '../../service'
 import {withRouter} from 'react-router-dom'
 import moment from 'moment';
@@ -45,9 +45,10 @@ class List extends React.Component {
                           <p style={{color: '#ef5350', fontSize: '13pt', paddingTop: '5px'}}>已结束</p>
                         </div>
                       }
+                      <Tag style={{verticalAlign: 'middle', marginLeft: '5px'}} color={moment().isBetween(moment(o.start_time), moment(o.end_time)) ? "#00e676": "#f44336"}>截止于{moment(o.end_time).format('YYYY-MM-DD HH:mm')}</Tag>
                     </Col>
                     <Col span={14}>
-                      <p style={{fontSize: '12pt'}}>{o.name}</p>
+                      <p style={{fontSize: '12pt', textOverflow:'ellipsis', overflow:'hidden', whiteSpace:'nowrap'}}>{o.name}</p>
                       <p style={{textOverflow:'ellipsis', overflow:'hidden', whiteSpace:'nowrap'}}>{o.introduction}</p>
                     </Col>
                   </Row>
