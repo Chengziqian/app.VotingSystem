@@ -11,7 +11,10 @@ class VoteCreator extends React.Component{
     this.date = moment().format('YYYY-MM-DD');
     this.state = {
       loading: false,
-      time: moment().format('HH:mm')
+      time: moment().format('HH:mm'),
+      presetData: [],
+      option_keys: [],
+      pre_options: []
     };
     this.uuid = 0
   }
@@ -21,6 +24,7 @@ class VoteCreator extends React.Component{
       () => this.tick(),
       1000
     );
+    this.getPreset()
   }
 
   componentWillUnmount() {
@@ -32,6 +36,15 @@ class VoteCreator extends React.Component{
     data.time = moment().format('HH:mm');
     this.setState(data);
   }
+
+  getPreset = () => {
+    http.get('/group').then(r => {
+      this.setState({
+        loading: false,
+        presetData: r.data
+      });
+    }).catch(e => {})
+  };
 
   handleSubmit = (e) => {
     e.preventDefault();
@@ -63,27 +76,63 @@ class VoteCreator extends React.Component{
   };
 
   remove = (k) => {
-    const { form } = this.props;
-    const keys = form.getFieldValue('option_keys');
+    const keys = this.state.option_keys;
     if (keys.length === 0) {
       return;
     }
-    form.setFieldsValue({
+    this.setState({
       option_keys: keys.filter(key => key !== k),
     });
   };
 
   add = () => {
-    const { form } = this.props;
-    const keys = form.getFieldValue('option_keys');
+    const keys = this.state.option_keys;
     const nextKeys = keys.concat(this.uuid++);
-    form.setFieldsValue({
+    this.setState({
       option_keys: nextKeys,
     });
   };
 
+  loadPreset = (e) => {
+    let id = e.target.value;
+    if (id) {
+      http.get('/group/' + id).then(r => {
+        if (!r.data) {
+          message.error('该预设群组不存在', 1).then(() => {
+          })
+        } else {
+          const { form } = this.props;
+          this.setState({
+            option_keys: (() => {
+              let res = [];
+              for(let i = 0; i < r.data.content.length; i++) {
+                res[i] = i;
+              }
+              return res;
+            })()
+          }, () => {
+            form.setFieldsValue({
+              options: r.data.content.map(o => o.name)
+            });
+          });
+          this.uuid = r.data.content.length;
+        }
+      }).catch(e => {})
+    } else {
+      const { form } = this.props;
+      this.setState({
+        option_keys: []
+      }, () => {
+        form.setFieldsValue({
+          options: ['']
+        });
+      });
+      this.uuid = 0;
+    }
+  };
+
   render() {
-    const { getFieldDecorator, getFieldValue } = this.props.form;
+    const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -100,29 +149,49 @@ class VoteCreator extends React.Component{
         sm: { span: 18, offset: 6 },
       },
     };
-    getFieldDecorator('option_keys', {initialValue: []});
-    const option_keys = getFieldValue('option_keys');
     const optionItems = () => {
-      let arr = [
-        (
+      let option_keys = this.state.option_keys || [];
+      if (option_keys.length === 0) {
+        let arr = [
+          (
+            <FormItem {...formItemLayout} label="投票选项" key={0}>
+              {getFieldDecorator(`options[${0}]`, {rules: [{required: true, message: '选项至少一个'}]})(<Input/>)}
+            </FormItem>
+          )
+        ];
+        let extra = option_keys.map((key, index) => (
+          <FormItem {...formItemLayout} colon={false} label={option_keys.length >= 1 ? (
+            <span><Icon
+              style={{cursor: 'pointer', fontSize: '20px', color: 'red'}}
+              type="minus-circle-o"
+              disabled={option_keys.length === 0}
+              onClick={() => this.remove(key)}
+            /></span>
+          ) : null} key={key + 1}>
+            {getFieldDecorator(`options[${key + 1}]`)(<Input />)}
+          </FormItem>
+        ));
+        return arr.concat(extra)
+      } else {
+        let extra = option_keys.map((key, index) => (
+          <FormItem {...formItemLayout} colon={false} label={option_keys.length >= 1 ? (
+            <span><Icon
+              style={{cursor: 'pointer', fontSize: '20px', color: 'red'}}
+              type="minus-circle-o"
+              disabled={option_keys.length === 0}
+              onClick={() => this.remove(key)}
+            /></span>
+          ) : null} key={key + 1}>
+            {getFieldDecorator(`options[${key + 1}]`)(<Input />)}
+          </FormItem>
+        ));
+        extra.unshift(
           <FormItem {...formItemLayout} label="投票选项" key={0}>
             {getFieldDecorator(`options[${0}]`, {rules: [{required: true, message: '选项至少一个'}]})(<Input/>)}
           </FormItem>
-        )
-      ];
-      let extra = option_keys.map((key, index) => (
-        <FormItem {...formItemLayout} colon={false} label={option_keys.length >= 1 ? (
-          <span><Icon
-            style={{cursor: 'pointer', fontSize: '20px', color: 'red'}}
-            type="minus-circle-o"
-            disabled={option_keys.length === 0}
-            onClick={() => this.remove(key)}
-          /></span>
-        ) : null} key={key + 1}>
-          {getFieldDecorator(`options[${key + 1}]`)(<Input />)}
-        </FormItem>
-      ));
-      return arr.concat(extra)
+        );
+        return extra
+      }
     };
     let dateLayout = {
       xs: 14,
@@ -170,6 +239,16 @@ class VoteCreator extends React.Component{
                 </FormItem>
                 <FormItem {...formItemLayout} label="每人票数">
                   {getFieldDecorator('count', {rules: [{required: true, message: '每人票数不能为空'}]})(<InputNumber min={1}/>)}
+                </FormItem>
+                <FormItem {...formItemLayout} label="导入选项预设">
+                  <select style={{border: '1px solid #d9d9d9', borderRadius: '4px', width: '100%'}} onChange={this.loadPreset}>
+                    <option value='' key='empty'>无</option>
+                    {
+                      this.state.presetData.map((o) => (
+                        <option value={o.id} key={o.id}>{o.name}</option>
+                      ))
+                    }
+                  </select>
                 </FormItem>
                 {optionItems()}
                 <FormItem {...formItemLayoutWithOutLabel}>

@@ -40,6 +40,9 @@ class App extends Component{
               <Route exact path="/vote/hasVoted" component={lazyload(() => import('../Vote/hasVoted'))}/>
               <Route exact path="/vote/:id" component={lazyload(() => import('../Vote/detail'))}/>
               <Route exact path="/vote/:id/result" component={lazyload(() => import('../Vote/result'))}/>
+              <Route exact path="/preset/create" component={lazyload(() => import('../PreSet/create'))}/>
+              <Route exact path="/preset/list" component={lazyload(() => import('../PreSet/list'))}/>
+              <Route exact path="/preset/:id" component={lazyload(() => import('../PreSet/detail'))}/>
             </Switch>
           </div>
         </div>

@@ -27,7 +27,7 @@ class Dashboard extends React.Component {
         title: <span style={{color: '#ffab40'}}>我的预设群组</span>,
         icon: <Icon type="appstore" theme="twoTone" twoToneColor="#ff9100"  style={{fontSize: '50px'}} />,
         introduction: '创建或查看自己的预设群组。',
-        to: '/'
+        to: '/preset/list'
       }
     ]
   }
