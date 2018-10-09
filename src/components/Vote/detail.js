@@ -63,7 +63,10 @@ class VoteDetail extends React.Component{
             window.location.reload();
           })
         }).catch(e => {
-          message.error(e.response.data.message)
+          this.setState({ loading: false });
+          if (e.response.status === 422) {
+            this.props.form.setFields(e.response.data.message);
+          }
         })
       }
     })
