@@ -35,21 +35,48 @@ class List extends React.Component {
                 >
                   <Row>
                     <Col span={10}>
-                      {moment().isBetween(moment(o.start_time), moment(o.end_time)) ?
-                        <div align="center">
-                          <Icon type="play-circle" theme="twoTone" twoToneColor="#00e676" style={{fontSize: '24pt'}}/>
-                          <p style={{color: '#69f0ae', fontSize: '13pt', paddingTop: '5px'}}>正在进行</p>
-                        </div> :
-                        <div align="center">
-                          <Icon type="exclamation-circle" theme="twoTone" twoToneColor="#f44336" style={{fontSize: '24pt'}}/>
-                          <p style={{color: '#ef5350', fontSize: '13pt', paddingTop: '5px'}}>已结束</p>
-                        </div>
+                      {
+                        (() => {
+                          if (moment().isBefore(moment(o.start_time))) return (
+                            <div align="center">
+                              <Icon type="play-circle" theme="twoTone" twoToneColor="#fdd835" style={{fontSize: '24pt'}}/>
+                              <p style={{color: '#fdd835', fontSize: '13pt', paddingTop: '5px'}}>未开始</p>
+                            </div>
+                          ); else if (moment().isAfter(moment(o.end_time))) return (
+                            <div align="center">
+                              <Icon type="exclamation-circle" theme="twoTone" twoToneColor="#f44336" style={{fontSize: '24pt'}}/>
+                              <p style={{color: '#ef5350', fontSize: '13pt', paddingTop: '5px'}}>已结束</p>
+                            </div>
+                          ); else return (
+                            <div align="center">
+                              <Icon type="play-circle" theme="twoTone" twoToneColor="#00e676" style={{fontSize: '24pt'}}/>
+                              <p style={{color: '#69f0ae', fontSize: '13pt', paddingTop: '5px'}}>正在进行</p>
+                            </div>
+                          );
+                        })()
                       }
-                      <Tag style={{verticalAlign: 'middle', marginLeft: '5px'}} color={moment().isBetween(moment(o.start_time), moment(o.end_time)) ? "#00e676": "#f44336"}>截止于{moment(o.end_time).format('YYYY-MM-DD HH:mm')}</Tag>
                     </Col>
                     <Col span={14}>
                       <p style={{fontSize: '12pt', textOverflow:'ellipsis', overflow:'hidden', whiteSpace:'nowrap'}}>{o.name}</p>
                       <p style={{textOverflow:'ellipsis', overflow:'hidden', whiteSpace:'nowrap'}}>{o.introduction}</p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span={24} style={{marginBottom: '10px'}}>
+                      开始于：
+                      <Tag style={{verticalAlign: 'middle', marginLeft: '5px'}} color={(() => {
+                        if (moment().isBefore(moment(o.start_time))) return 'gold';
+                        else if (moment().isAfter(moment(o.end_time))) return 'red';
+                        else return 'green';
+                      })()}>{moment(o.start_time).format('YYYY-MM-DD HH:mm')}</Tag>
+                    </Col>
+                    <Col span={24}>
+                      结束于：
+                      <Tag style={{verticalAlign: 'middle', marginLeft: '5px'}} color={(() => {
+                        if (moment().isBefore(moment(o.start_time))) return 'gold';
+                        else if (moment().isAfter(moment(o.end_time))) return 'red';
+                        else return 'green';
+                      })()}>{moment(o.end_time).format('YYYY-MM-DD HH:mm')}</Tag>
                     </Col>
                   </Row>
                 </Card>

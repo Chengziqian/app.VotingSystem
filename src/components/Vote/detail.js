@@ -116,16 +116,22 @@ class VoteDetail extends React.Component{
                 if (this.state.data.length === 0) {
                   return (<span style={{verticalAlign: 'middle'}}>投票活动</span>)
                 } else {
-                  return moment().isBetween(moment(this.state.data.start_time), moment(this.state.data.end_time)) ?
+                  if (moment().isBefore(moment(this.state.data.start_time))) return (
                     <span>
                       <span style={{verticalAlign: 'middle'}}>投票活动</span>
-                      <Tag style={{verticalAlign: 'middle', marginLeft: '5px'}} color="#00e676">进行中</Tag>
+                      <Tag style={{verticalAlign: 'middle', marginLeft: '5px'}} color="#fdd835">未开始</Tag>
                     </span>
-                    :
+                  ); else if (moment().isAfter(moment(this.state.data.end_time))) return (
                     <span>
                       <span style={{verticalAlign: 'middle'}}>投票活动</span>
                       <Tag style={{verticalAlign: 'middle', marginLeft: '5px'}} color="#f44336">已结束</Tag>
                     </span>
+                  ); else return (
+                    <span>
+                      <span style={{verticalAlign: 'middle'}}>投票活动</span>
+                      <Tag style={{verticalAlign: 'middle', marginLeft: '5px'}} color="#00e676">进行中</Tag>
+                    </span>
+                  );
                 }
               })()
             }
