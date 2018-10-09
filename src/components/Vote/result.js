@@ -65,16 +65,24 @@ class VoteResult extends React.Component{
         <Row type="flex" justify="center" style={{padding: '20px 10px'}}>
           <Col xs={24} sm={15} md={12}>
             <Card title={
-              moment().isBetween(moment(this.state.data.start_time), moment(this.state.data.end_time)) ?
-                <span>
-                <span style={{verticalAlign: 'middle'}}>投票结果</span>
-                <Tag style={{verticalAlign: 'middle', marginLeft: '5px'}} color="#00e676">进行中</Tag>
-              </span>
-                :
-                <span>
-                <span style={{verticalAlign: 'middle'}}>投票结果</span>
-                <Tag style={{verticalAlign: 'middle', marginLeft: '5px'}} color="#f44336">已结束</Tag>
-              </span>
+              (() => {
+                if (moment().isBefore(moment(this.state.data.start_time))) return (
+                  <span>
+                      <span style={{verticalAlign: 'middle'}}>投票结果</span>
+                      <Tag style={{verticalAlign: 'middle', marginLeft: '5px'}} color="#fdd835">未开始</Tag>
+                    </span>
+                ); else if (moment().isAfter(moment(this.state.data.end_time))) return (
+                  <span>
+                      <span style={{verticalAlign: 'middle'}}>投票结果</span>
+                      <Tag style={{verticalAlign: 'middle', marginLeft: '5px'}} color="#f44336">已结束</Tag>
+                    </span>
+                ); else return (
+                  <span>
+                      <span style={{verticalAlign: 'middle'}}>投票结果</span>
+                      <Tag style={{verticalAlign: 'middle', marginLeft: '5px'}} color="#00e676">进行中</Tag>
+                    </span>
+                );
+              })()
             } loading={this.state.loading}>
               <p style={{textAlign: 'center', fontSize: '24pt'}}>{this.state.data.name}</p>
               <p style={{wordWrap: 'break-word',wordBreak: 'normal'}}>{this.state.data.introduction}</p>
@@ -83,7 +91,7 @@ class VoteResult extends React.Component{
               {
                 (() => (
                   this.state.result.map((o, index) => (
-                    <Card>
+                    <Card key={index}>
                       <p>{o.name}</p>
                       <Progress percent={Math.round(o.count/this.state.total * 100)} status="active" />
                     </Card>

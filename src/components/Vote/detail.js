@@ -21,7 +21,7 @@ class VoteDetail extends React.Component{
 
   componentDidMount() {
     this.getIsVoted();
-    this.getData()
+    this.getData();
   }
 
   getData = () => {
@@ -162,7 +162,7 @@ class VoteDetail extends React.Component{
                       (() => {
                         if (this.state.isVoted || this.state.isExpired) {
                           if (this.state.isVoted) return '您已投票';
-                          else return '投票已结束'
+                          else return '投票未开始或已结束'
                         } else {
                           return '投票'
                         }
@@ -170,7 +170,7 @@ class VoteDetail extends React.Component{
                     }
                     </Button>
                 </FormItem>
-                {(this.state.isVoted || this.state.isExpired) &&<FormItem >
+                {( this.state.isVoted || moment().isAfter(moment(this.state.data.end_time)) ) &&<FormItem >
                   <Button type="primary" htmlType='button' onClick={() => {this.props.history.push(`/vote/${this.props.match.params.id}/result`)}} block>查看结果</Button>
                 </FormItem>}
               </Form>
